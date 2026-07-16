@@ -1,46 +1,79 @@
 # Interview Questions & Answers: Job Application Screener Agent
 
-This guide covers potential technical interview questions and answers based on the architecture, technologies, and debug workflows used in this project.
+This guide covers potential technical interview questions and answers, structured in order of priority from high-level concepts and tech stack decisions to deep technical troubleshooting.
 
 ---
 
-### Q1: Explain the architectural design of this project and why Separation of Concerns (SoC) was prioritized.
-**Answer:**
-The project is built on **Clean Architecture** principles to separate presentation, business logic, and configuration:
-- **CLI/Presentation Layer (`src/main.py`)**: Responsible solely for user interaction, command-line argument parsing, and environment setup/validation.
-- **Service/Agent Layer (`src/agent.py`)**: Handles the business logic of loading files (prompts and resumes) and invoking the LLM client. It doesn't care how the job description was acquired (whether from a file or inline string).
-- **Data & Configuration Layer (`/data`, `/prompts`)**: Stores system prompts and candidate profiles as static files.
+## Part 1: High-Level Concepts & Tech Stack (Priority Group A)
 
-**Benefit:** This isolation makes unit testing and maintenance straightforward. For example, we can switch from a CLI to a Web UI (FastAPI/Streamlit) without changing any of the agent logic in `src/agent.py`. Similarly, we can modify the system instructions in `system_prompt.md` without modifying Python code.
+### Q1: What is the Job Application Screener Agent and what does it do?
+**Answer:**
+It is an AI-powered automation tool designed to streamline candidate screening by evaluating how well a candidate's resume matches a specific Job Description (JD). 
+It reads a candidate's resume (e.g., `resume.txt`) and a target JD, then sends them to the Google Gemini model using a structured prompt. The agent outputs:
+1. A quantitative **Match Score (1-10)**.
+2. A list of the **Top 3 Skill Gaps** between the candidate's experience and the JD.
+3. A **Tailored Cover Letter Introduction** (max 150 words) that highlights matching strengths (specifically Python, GCP, Azure, and automation).
 
 ---
 
-### Q2: What issue did you encounter with Google Cloud Application Default Credentials (ADC) and how was it solved?
+### Q2: What technology stack was selected for this project and why?
 **Answer:**
-On systems where developers have local Google Cloud SDK configurations active, the environment often contains variables like `GOOGLE_APPLICATION_CREDENTIALS` or global configurations pointing to default GCP credentials.
+- **Python**: Selected as the primary programming language due to its industry-standard status for AI development, fast prototyping capability, and extensive package ecosystem.
+- **LangChain (`langchain` & `langchain-google-genai`)**: Used as the AI orchestration framework because it abstracts API interaction, cleanly separates message roles (System vs. Human), and makes switching LLM providers (e.g., from Anthropic to Gemini) minimal-effort.
+- **Google Gemini (`gemini-2.5-flash`)**: Chosen as the LLM backend for its speed, low latency, strong reasoning capabilities, and ease of access via Google AI Studio.
+- **python-dotenv**: Integrated to securely load configuration keys (`GEMINI_API_KEY`) from local `.env` files rather than hardcoding credentials.
 
-When `ChatGoogleGenerativeAI` initializes, the underlying Google Auth SDK prefers GCP Service Account credentials (OAuth 2.0 Bearer tokens) over developer API keys. If the endpoint (`generativelanguage.googleapis.com`) expects an API key but receives a GCP OAuth token, it rejects the request with a `401 ACCESS_TOKEN_TYPE_UNSUPPORTED` error.
+---
+
+## Part 2: Architecture & Design Principles (Priority Group B)
+
+### Q3: Explain the architectural design of this project and why Separation of Concerns (SoC) was prioritized.
+**Answer:**
+The project is built on **Clean Architecture** principles to isolate presentation, logic, and configuration:
+- **CLI/Presentation Layer (`src/main.py`)**: Handles command-line arguments, checks files, loads/overrides environments, and displays results.
+- **Service/Agent Layer (`src/agent.py`)**: Manages the LLM connection, constructs prompt templates, and executes the call. It remains agnostic of how the JD was loaded (file vs. inline).
+- **Data & Configuration Layer (`/data`, `/prompts`)**: Decouples the prompt instructions and the resume from Python code.
+
+**Benefit:** This makes changes modular. We can migrate the interface from a CLI to a Web UI (like Streamlit or FastAPI) without modifying any core agent code in `src/agent.py`.
+
+---
+
+### Q4: Why is the system prompt configured externally in `system_prompt.md` rather than embedded in code?
+**Answer:**
+Prompt engineering is an iterative process. Storing the system prompt in [prompts/system_prompt.md](file:///Users/mdislam/Documents/META/ai_agent/prompts/system_prompt.md) instead of hardcoding it as a Python string offers key advantages:
+1. **No Code Re-deployments**: The AI's behavior, instructions, and target output constraints can be adjusted dynamically without modifying or risking python code regressions.
+2. **Readability**: Prompts can get long and require markdown layout formatting. Storing it as a `.md` file enables syntax highlighting and clean authoring.
+
+---
+
+## Part 3: Debugging & Troubleshooting (Priority Group C)
+
+### Q5: What issue did you encounter with Google Cloud Application Default Credentials (ADC) and how was it solved?
+**Answer:**
+On systems with active Google Cloud SDK installations, the environment often exports credentials like `GOOGLE_APPLICATION_CREDENTIALS` or global configurations pointing to default GCP credentials.
+
+When `ChatGoogleGenerativeAI` initialized, the underlying Google Auth SDK preferred GCP Service Account credentials (OAuth 2.0 Bearer tokens) over developer API keys. Because the developer Gemini endpoint expects an API key, sending it as an OAuth token caused a `401 ACCESS_TOKEN_TYPE_UNSUPPORTED` error.
 
 **Solution:**
-We programmatically isolated the Python process context by stripping out conflicting GCP variables:
+We programmatically isolated the Python process environment inside `src/agent.py` by clearing conflicting GCP variables before model instantiation:
 ```python
 gcp_vars = ["GOOGLE_APPLICATION_CREDENTIALS", "GOOGLE_CLOUD_PROJECT", "GCLOUD_PROJECT"]
 for var in gcp_vars:
     os.environ.pop(var, None)
 ```
-This forces the Google GenAI library to fallback and exclusively use the developer `GOOGLE_API_KEY` provided in the `.env` file.
+This forces the Google GenAI SDK to fall back and successfully use the developer `GOOGLE_API_KEY`.
 
 ---
 
-### Q3: Why is `load_dotenv(override=True)` used instead of the default `load_dotenv()`?
+### Q6: Why was it necessary to use `load_dotenv(override=True)` instead of default `load_dotenv()`?
 **Answer:**
-By default, `load_dotenv()` will *not* overwrite environment variables that are already defined in the active terminal shell. If a developer had previously run `export GEMINI_API_KEY=old_or_invalid_key` in their terminal session, the default `load_dotenv()` would ignore the updated key in the `.env` file.
+By default, `load_dotenv()` will *not* overwrite environment variables that are already defined in the active terminal shell. If a developer had previously run `export GEMINI_API_KEY=old_or_invalid_key` in their active terminal session, the default `load_dotenv()` would ignore the updated key in the `.env` file.
 
-Using `override=True` ensures that the values defined in the project's local `.env` file always take precedence, preventing silent overrides and configuration sync issues in long-lived terminal sessions.
+Using `override=True` ensures that the values defined in the project's local `.env` file always take precedence, preventing configuration conflicts in long-lived terminal sessions.
 
 ---
 
-### Q4: How did you diagnose and resolve the premature truncation of the Gemini API output?
+### Q7: How did you diagnose and resolve the premature truncation of the Gemini API output?
 **Answer:**
 Initially, the screening report was cutting off mid-sentence. 
 
@@ -53,7 +86,7 @@ Removing the `max_output_tokens` parameter allowed the model to leverage its def
 
 ---
 
-### Q5: How was the macOS OpenSSL LibreSSL version mismatch resolved for `urllib3`?
+### Q8: How was the macOS OpenSSL LibreSSL version mismatch resolved for `urllib3`?
 **Answer:**
 On macOS, Python environments running `urllib3` v2.x often throw a `NotOpenSSLWarning` because urllib3 v2 requires OpenSSL 1.1.1+, whereas the macOS system python is compiled against LibreSSL.
 
