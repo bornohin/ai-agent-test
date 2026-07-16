@@ -84,7 +84,7 @@ Available arguments:
 - `--jd-file` / `-f`: Path to a file containing the job description.
 - `--resume` / `-r`: Custom path to a resume file (defaults to `data/resume.txt`).
 - `--prompt` / `-p`: Custom path to the system prompt markdown file (defaults to `prompts/system_prompt.md`).
-- `--model` / `-m`: Customize the Gemini model (defaults to `gemini-1.5-flash`).
+- `--model` / `-m`: Customize the Gemini model (defaults to `gemini-2.5-flash`).
 
 ---
 

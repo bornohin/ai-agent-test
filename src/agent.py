@@ -17,7 +17,7 @@ def screen_candidate(
     job_description: str,
     resume_path: str = "data/resume.txt",
     system_prompt_path: str = "prompts/system_prompt.md",
-    model_name: str = "gemini-1.5-flash"
+    model_name: str = "gemini-2.5-flash"
 ) -> str:
     """
     Screens a candidate's resume against a job description using the Gemini API.

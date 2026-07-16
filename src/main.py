@@ -60,8 +60,8 @@ def main():
     parser.add_argument(
         "--model", "-m",
         type=str,
-        default="gemini-1.5-flash",
-        help="Gemini model to use (default: gemini-1.5-flash)"
+        default="gemini-2.5-flash",
+        help="Gemini model to use (default: gemini-2.5-flash)"
     )
 
     args = parser.parse_args()
