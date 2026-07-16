@@ -48,8 +48,7 @@ def screen_candidate(
     # Initialize the ChatGoogleGenerativeAI model
     llm = ChatGoogleGenerativeAI(
         model=model_name,
-        temperature=0,
-        max_output_tokens=1000
+        temperature=0
     )
 
     # Structure messages
