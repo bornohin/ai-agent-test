@@ -1,0 +1,33 @@
+Tom Islam
+Senior Python Software Engineer & Cloud Architect
+Email: tom.islam@example.com | LinkedIn: linkedin.com/in/tomislam
+
+SUMMARY
+Highly skilled Senior Python Software Engineer and Cloud Architect with 8+ years of experience specializing in building scalable backend systems, designing cloud-native architectures (GCP and Azure), and implementing automated testing and deployment frameworks. Expert in translating complex business requirements into high-performance, maintainable software.
+
+TECHNICAL SKILLS
+- Languages: Python (Expert), SQL, Bash, Go
+- Cloud & Infrastructure: Google Cloud Platform (GCP), Microsoft Azure, Docker, Kubernetes, Terraform
+- Automation & CI/CD: GitHub Actions, Jenkins, Automated testing frameworks (pytest, unittest), Ansible
+- Frameworks & Libraries: FastAPI, Flask, Django, LangChain, Celery, Pandas, NumPy
+- Databases: PostgreSQL, MongoDB, Redis, BigQuery
+
+PROFESSIONAL EXPERIENCE
+
+Senior Python Software Engineer | Cloud Architect
+TechSolutions Inc. | 2022 - Present
+- Designed and built a scalable data ingestion pipeline using Python (FastAPI) and GCP Cloud Functions, processing over 10M daily events and reducing latency by 35%.
+- Architected and migrated on-premise workflow automation tools to Microsoft Azure, leveraging Azure Functions and Azure DevOps for automated CI/CD pipelines.
+- Developed an internal automated testing and quality assurance framework in Python using pytest, increasing code coverage from 60% to 92% across multiple services.
+- Spearheaded the adoption of infrastructure-as-code (IaC) using Terraform, standardizing multi-region deployments in GCP and Azure.
+
+Python Software Engineer
+Data自动化 LLC | 2018 - 2022
+- Built and maintained RESTful APIs using Python (Django, Flask) for a high-traffic web application.
+- Implemented robust automation scripts in Python to streamline server provisioning and configuration management, saving 15+ engineering hours per week.
+- Configured and optimized PostgreSQL database queries, improving dashboard load times by 50%.
+- Integrated third-party APIs and automated webhook processors for external developer platforms.
+
+EDUCATION
+Bachelor of Science in Computer Science
+University of Technology
