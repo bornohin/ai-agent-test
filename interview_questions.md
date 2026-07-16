@@ -38,7 +38,18 @@ The project is built on **Clean Architecture** principles to isolate presentatio
 
 ---
 
-### Q4: Why is the system prompt configured externally in `system_prompt.md` rather than embedded in code?
+### Q4: How was the project extended to support a Flask Web UI while maintaining the CLI, and what architectural pattern enabled this?
+**Answer:**
+We added a Flask server (`src/app.py`) along with a static web frontend (`src/templates/index.html` and `/src/static/` assets) to run the Web UI, while keeping the terminal CLI (`src/main.py`) fully functional.
+
+This was enabled by the **Service-Repository/Controller Pattern (Clean Architecture)**:
+1. The core AI execution function (`screen_candidate`) resides entirely in `src/agent.py`.
+2. Both `src/main.py` (CLI entry point) and `src/app.py` (Flask controller/API route) import and call the exact same `screen_candidate` function.
+3. Because the agent layer is completely presentation-agnostic and relies on arguments rather than global system inputs, we could connect it to a web API and a CLI client concurrently with zero code changes to the AI core logic.
+
+---
+
+### Q5: Why is the system prompt configured externally in `system_prompt.md` rather than embedded in code?
 **Answer:**
 Prompt engineering is an iterative process. Storing the system prompt in [prompts/system_prompt.md](file:///Users/mdislam/Documents/META/ai_agent/prompts/system_prompt.md) instead of hardcoding it as a Python string offers key advantages:
 1. **No Code Re-deployments**: The AI's behavior, instructions, and target output constraints can be adjusted dynamically without modifying or risking python code regressions.
@@ -48,7 +59,7 @@ Prompt engineering is an iterative process. Storing the system prompt in [prompt
 
 ## Part 3: Debugging & Troubleshooting (Priority Group C)
 
-### Q5: What issue did you encounter with Google Cloud Application Default Credentials (ADC) and how was it solved?
+### Q6: What issue did you encounter with Google Cloud Application Default Credentials (ADC) and how was it solved?
 **Answer:**
 On systems with active Google Cloud SDK installations, the environment often exports credentials like `GOOGLE_APPLICATION_CREDENTIALS` or global configurations pointing to default GCP credentials.
 
@@ -65,7 +76,7 @@ This forces the Google GenAI SDK to fall back and successfully use the developer
 
 ---
 
-### Q6: Why was it necessary to use `load_dotenv(override=True)` instead of default `load_dotenv()`?
+### Q7: Why was it necessary to use `load_dotenv(override=True)` instead of default `load_dotenv()`?
 **Answer:**
 By default, `load_dotenv()` will *not* overwrite environment variables that are already defined in the active terminal shell. If a developer had previously run `export GEMINI_API_KEY=old_or_invalid_key` in their active terminal session, the default `load_dotenv()` would ignore the updated key in the `.env` file.
 
@@ -73,7 +84,7 @@ Using `override=True` ensures that the values defined in the project's local `.e
 
 ---
 
-### Q7: How did you diagnose and resolve the premature truncation of the Gemini API output?
+### Q8: How did you diagnose and resolve the premature truncation of the Gemini API output?
 **Answer:**
 Initially, the screening report was cutting off mid-sentence. 
 
@@ -86,7 +97,7 @@ Removing the `max_output_tokens` parameter allowed the model to leverage its def
 
 ---
 
-### Q8: How was the macOS OpenSSL LibreSSL version mismatch resolved for `urllib3`?
+### Q9: How was the macOS OpenSSL LibreSSL version mismatch resolved for `urllib3`?
 **Answer:**
 On macOS, Python environments running `urllib3` v2.x often throw a `NotOpenSSLWarning` because urllib3 v2 requires OpenSSL 1.1.1+, whereas the macOS system python is compiled against LibreSSL.
 
