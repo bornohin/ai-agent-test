@@ -1,3 +1,10 @@
+import warnings
+# Suppress deprecation and version warnings from dependencies to keep CLI output clean
+warnings.filterwarnings("ignore", category=FutureWarning)
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", message=".*OpenSSL.*")
+warnings.filterwarnings("ignore", message=".*LibreSSL.*")
+
 import os
 import sys
 import argparse
