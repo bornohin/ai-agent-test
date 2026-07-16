@@ -21,10 +21,10 @@ def setup_environment():
     env_path = base_dir / ".env"
     
     if env_path.exists():
-        load_dotenv(dotenv_path=env_path)
+        load_dotenv(dotenv_path=env_path, override=True)
     else:
         # Load from system environment/default search path
-        load_dotenv()
+        load_dotenv(override=True)
 
     # Validate that GEMINI_API_KEY or GOOGLE_API_KEY is available
     if not os.environ.get("GEMINI_API_KEY") and not os.environ.get("GOOGLE_API_KEY"):
