@@ -45,6 +45,12 @@ def screen_candidate(
     if api_key:
         os.environ["GOOGLE_API_KEY"] = api_key
 
+    # Clear any Google Cloud Application Default Credentials (ADC) from the active
+    # process to prevent conflict with the developer API key.
+    gcp_vars = ["GOOGLE_APPLICATION_CREDENTIALS", "GOOGLE_CLOUD_PROJECT", "GCLOUD_PROJECT"]
+    for var in gcp_vars:
+        os.environ.pop(var, None)
+
     # Initialize the ChatGoogleGenerativeAI model
     llm = ChatGoogleGenerativeAI(
         model=model_name,
