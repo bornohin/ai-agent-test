@@ -19,18 +19,18 @@ def setup_environment():
         # Load from system environment/default search path
         load_dotenv()
 
-    # Validate that ANTHROPIC_API_KEY is available
-    if not os.environ.get("ANTHROPIC_API_KEY"):
-        print("Error: ANTHROPIC_API_KEY is not set.", file=sys.stderr)
+    # Validate that GEMINI_API_KEY or GOOGLE_API_KEY is available
+    if not os.environ.get("GEMINI_API_KEY") and not os.environ.get("GOOGLE_API_KEY"):
+        print("Error: Neither GEMINI_API_KEY nor GOOGLE_API_KEY is set.", file=sys.stderr)
         print("Please create a '.env' file in the project root with your API key, like so:", file=sys.stderr)
-        print("   ANTHROPIC_API_KEY=your-api-key-here", file=sys.stderr)
+        print("   GEMINI_API_KEY=your-gemini-api-key-here", file=sys.stderr)
         sys.exit(1)
 
 def main():
     setup_environment()
 
     parser = argparse.ArgumentParser(
-        description="Job Application Screener Agent - Analyze resumes against JDs using Claude."
+        description="Job Application Screener Agent - Analyze resumes against JDs using Gemini."
     )
     
     group = parser.add_mutually_exclusive_group(required=True)
@@ -60,8 +60,8 @@ def main():
     parser.add_argument(
         "--model", "-m",
         type=str,
-        default="claude-3-5-sonnet-20240620",
-        help="Claude model to use (default: claude-3-5-sonnet-20240620)"
+        default="gemini-1.5-flash",
+        help="Gemini model to use (default: gemini-1.5-flash)"
     )
 
     args = parser.parse_args()
@@ -85,7 +85,7 @@ def main():
         print("Error: The job description cannot be empty.", file=sys.stderr)
         sys.exit(1)
 
-    print("Analyzing candidate match with Claude...")
+    print("Analyzing candidate match with Gemini...")
     
     try:
         assessment = screen_candidate(

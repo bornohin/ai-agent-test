@@ -1,6 +1,6 @@
 # Job Application Screener Agent
 
-An intelligent, AI-powered agent designed to evaluate job descriptions against a candidate's resume (Tom Islam). Built with Python, LangChain, and the Claude (Anthropic) API, the application calculates a match score, identifies critical skill gaps, and generates a tailored cover letter introduction.
+An intelligent, AI-powered agent designed to evaluate job descriptions against a candidate's resume (Tom Islam). Built with Python, LangChain, and the Gemini API, the application calculates a match score, identifies critical skill gaps, and generates a tailored cover letter introduction.
 
 ## Project Structure
 
@@ -8,9 +8,9 @@ An intelligent, AI-powered agent designed to evaluate job descriptions against a
 ├── data/
 │   └── resume.txt          # Candidate resume (Tom Islam)
 ├── prompts/
-│   └── system_prompt.md    # Instructions and role definition for Claude
+│   └── system_prompt.md    # Instructions and role definition for Gemini
 ├── src/
-│   ├── agent.py            # Core LangChain & Claude integration logic
+│   ├── agent.py            # Core LangChain & Gemini integration logic
 │   └── main.py             # CLI entrypoint, argument parsing, & env setup
 ├── .env.example            # Environment variables template
 ├── requirements.txt        # Project dependencies
@@ -23,7 +23,7 @@ An intelligent, AI-powered agent designed to evaluate job descriptions against a
 
 ### 1. Prerequisites
 - Python 3.9 or higher
-- An Anthropic API Key (Claude)
+- A Gemini API Key (Google AI Studio)
 
 ### 2. Installation
 Clone or navigate to this directory, then set up a virtual environment and install the required dependencies:
@@ -49,9 +49,9 @@ Create a `.env` file in the project root:
 cp .env.example .env
 ```
 
-Open `.env` in a text editor and replace the placeholder value with your real Anthropic API key:
+Open `.env` in a text editor and replace the placeholder value with your real Gemini API key:
 ```env
-ANTHROPIC_API_KEY=your_actual_anthropic_api_key
+GEMINI_API_KEY=your_actual_gemini_api_key
 ```
 
 ---
@@ -84,13 +84,13 @@ Available arguments:
 - `--jd-file` / `-f`: Path to a file containing the job description.
 - `--resume` / `-r`: Custom path to a resume file (defaults to `data/resume.txt`).
 - `--prompt` / `-p`: Custom path to the system prompt markdown file (defaults to `prompts/system_prompt.md`).
-- `--model` / `-m`: Customize the Claude model (defaults to `claude-3-5-sonnet-20240620`).
+- `--model` / `-m`: Customize the Gemini model (defaults to `gemini-1.5-flash`).
 
 ---
 
 ## Clean Architecture Principles
 
 This project utilizes a clean separation of concerns:
-- **Presentation / CLI Layer (`src/main.py`)**: Responsible for reading command line input, loading environment variables, validating that dependencies (such as keys and paths) are present, and displaying the evaluation report.
-- **Service / Agent Layer (`src/agent.py`)**: Manages the orchestration logic, handles files (loading prompts and resumes), formats message structures, and handles Claude API invocation.
+- **Presentation / CLI Layer (`src/main.py`)**: Responsible for reading command line input, loading environment variables, validating that credentials and paths are present, and displaying the evaluation report.
+- **Service / Agent Layer (`src/agent.py`)**: Manages the orchestration logic, handles files (loading prompts and resumes), formats message structures, and handles Gemini API invocation.
 - **Configuration & Knowledge Base (`/prompts`, `/data`)**: System prompts and static information (like the resume) are externalized, ensuring they can be updated independently without changing source code.
